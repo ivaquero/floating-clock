@@ -1,49 +1,49 @@
 #include "clock.h"
 
-Clock::Clock(QWidget *parent) : QWidget{parent}, pressed(false) {
+Clock::Clock(QWidget *parent)
+    : QWidget{parent}
+    , pressed(false)
+{
+    // geometry of Main Window (x, y, width, height)
+    setGeometry(1100, 800, 180, 60);
 
-  // geometry of Main Window (x, y, width, height)
-  setGeometry(1100, 800, 180, 60);
+    // hide frame
+    setWindowFlag(Qt::WindowStaysOnTopHint, true);
+    setWindowFlag(Qt::FramelessWindowHint, true);
+    setAttribute(Qt::WA_TranslucentBackground);
 
-  // hide frame
-  setWindowFlag(Qt::WindowStaysOnTopHint, true);
-  setWindowFlag(Qt::FramelessWindowHint, true);
-  setAttribute(Qt::WA_TranslucentBackground);
+    // clock object
+    QTimer *clock = new QTimer(this);
+    connect(clock, &QTimer::timeout, this, &Clock::showTime);
+    clock->start(1000); // update the clock per second
+    show();
 
-  // clock object
-  QTimer *clock = new QTimer(this);
-  connect(clock, &QTimer::timeout, this, &Clock::showTime);
-  clock->start(1000); // update the clock per second
-  show();
+    settings = new QSettings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
+                             QSettings::IniFormat);
 
-  settings = new QSettings(
-      QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
-      QSettings::IniFormat);
+    font = QFont();
+    font.setFamily(settings->value("USER/FONT_FAMILY").toString());
+    font.setPointSize(settings->value("USER/FONT_SIZE").toInt());
 
-  font = QFont();
-  font.setFamily(settings->value("USER/FONT_FAMILY").toString());
-  font.setPointSize(settings->value("USER/FONT_SIZE").toInt());
+    // load settings
+    settings = new QSettings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
+                             QSettings::IniFormat);
 
-  // load settings
-  settings = new QSettings(
-      QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
-      QSettings::IniFormat);
+    // font object
+    font = QFont();
+    font.setFamily(settings->value("DEFAULT/FONT_FAMILY").toString());
+    font_size_step = settings->value("USER/FONT_SIZE_STEP").toInt();
 
-  // font object
-  font = QFont();
-  font.setFamily(settings->value("DEFAULT/FONT_FAMILY").toString());
-  font_size_step = settings->value("USER/FONT_SIZE_STEP").toInt();
+    // label object
+    label = new QLabel();
+    label->setAlignment(Qt::AlignCenter);
 
-  // label object
-  label = new QLabel();
-  label->setAlignment(Qt::AlignCenter);
+    // layout
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(label);
+    setLayout(layout);
 
-  // layout
-  QVBoxLayout *layout = new QVBoxLayout(this);
-  layout->addWidget(label);
-  setLayout(layout);
-
-  reloadUI();
+    reloadUI();
 }
 
 void Clock::showTime() {

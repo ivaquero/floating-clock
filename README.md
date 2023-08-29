@@ -3,7 +3,7 @@
 ![code size](https://img.shields.io/github/languages/code-size/ivaquero/floating-clock.svg)
 ![repo size](https://img.shields.io/github/repo-size/ivaquero/floating-clock.svg)
 
-This project aims to build a cross-platform floating clock based on PySide6 & Qt5.
+This project aims to build a cross-platform floating clock based on PySide6 & Qt6.
 
 ## Motivation
 
