@@ -1,49 +1,52 @@
 #include "clock.h"
 
-Clock::Clock(QWidget *parent)
-    : QWidget{parent}
-    , pressed(false)
-{
-    // geometry of Main Window (x, y, width, height)
-    setGeometry(1100, 800, 180, 60);
+Clock::Clock(QWidget *parent) : QWidget{parent}, pressed(false) {
+  // geometry of Main Window (x, y, width, height)
+  setGeometry(1100, 800, 180, 60);
 
-    // hide frame
-    setWindowFlag(Qt::WindowStaysOnTopHint, true);
-    setWindowFlag(Qt::FramelessWindowHint, true);
-    setAttribute(Qt::WA_TranslucentBackground);
+  // hide frame
+  setWindowFlag(Qt::WindowStaysOnTopHint, true);
+  setWindowFlag(Qt::FramelessWindowHint, true);
+  setAttribute(Qt::WA_TranslucentBackground);
 
-    // clock object
-    QTimer *clock = new QTimer(this);
-    connect(clock, &QTimer::timeout, this, &Clock::showTime);
-    clock->start(1000); // update the clock per second
-    show();
+  // setFixedSize(this->width(), this->height());
+  setWindowFlags(windowFlags() & ~Qt::WindowMaximizeButtonHint &
+                 ~Qt::WindowMinimizeButtonHint);
 
-    settings = new QSettings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
-                             QSettings::IniFormat);
+  // clock object
+  QTimer *clock = new QTimer(this);
+  connect(clock, &QTimer::timeout, this, &Clock::showTime);
+  clock->start(1000); // update the clock per second
+  show();
 
-    font = QFont();
-    font.setFamily(settings->value("USER/FONT_FAMILY").toString());
-    font.setPointSize(settings->value("USER/FONT_SIZE").toInt());
+  settings = new QSettings(
+      QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
+      QSettings::IniFormat);
 
-    // load settings
-    settings = new QSettings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
-                             QSettings::IniFormat);
+  font = QFont();
+  font.setFamily(settings->value("USER/FONT_FAMILY").toString());
+  font.setPointSize(settings->value("USER/FONT_SIZE").toInt());
 
-    // font object
-    font = QFont();
-    font.setFamily(settings->value("DEFAULT/FONT_FAMILY").toString());
-    font_size_step = settings->value("USER/FONT_SIZE_STEP").toInt();
+  // load settings
+  settings = new QSettings(
+      QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
+      QSettings::IniFormat);
 
-    // label object
-    label = new QLabel();
-    label->setAlignment(Qt::AlignCenter);
+  // font object
+  font = QFont();
+  font.setFamily(settings->value("DEFAULT/FONT_FAMILY").toString());
+  font_size_step = settings->value("USER/FONT_SIZE_STEP").toInt();
 
-    // layout
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addWidget(label);
-    setLayout(layout);
+  // label object
+  label = new QLabel();
+  label->setAlignment(Qt::AlignCenter);
 
-    reloadUI();
+  // layout
+  QVBoxLayout *layout = new QVBoxLayout(this);
+  layout->addWidget(label);
+  setLayout(layout);
+
+  reloadUI();
 }
 
 void Clock::showTime() {
@@ -116,11 +119,13 @@ void Clock::mouseReleaseEvent(QMouseEvent *event) {
   QWidget::mouseReleaseEvent(event);
 }
 
-void Clock::mouseRightMenu(const QPoint &pos) {
-  QMenu menu(this);
+void Clock::contextMenuEvent(QContextMenuEvent *event) {
+  QMenu *menu = new QMenu();
+
+  // menu->setFixedWidth(100);
 
   // font size
-  QMenu *font_size_menu = menu.addMenu("font size");
+  QMenu *font_size_menu = menu->addMenu("font size");
   QAction *larger_action = new QAction("larger", this);
   QAction *smaller_action = new QAction("smaller", this);
 
@@ -136,7 +141,7 @@ void Clock::mouseRightMenu(const QPoint &pos) {
                            "red",  "yellow", "white"};
 
   // font color
-  QMenu *font_color_menu = menu.addMenu("font color");
+  QMenu *font_color_menu = menu->addMenu("font color");
   QList<QAction *> font_color_actions;
   for (const QString &color : ft_colors) {
     QAction *action = new QAction(color, this);
@@ -146,7 +151,7 @@ void Clock::mouseRightMenu(const QPoint &pos) {
   font_color_menu->addActions(font_color_actions);
 
   // background color
-  QMenu *bg_color_menu = menu.addMenu("bg color");
+  QMenu *bg_color_menu = menu->addMenu("bg color");
   QList<QAction *> bg_color_actions;
   for (const QString &color : bg_colors) {
     QAction *action = new QAction(color, this);
@@ -158,12 +163,14 @@ void Clock::mouseRightMenu(const QPoint &pos) {
   // reset
   QAction *reset_action = new QAction("reset", this);
   connect(reset_action, &QAction::triggered, this, &Clock::resetUI);
-  menu.addAction(reset_action);
+  menu->addAction(reset_action);
 
   // quit
   QAction *quit_action = new QAction("quit", this);
   connect(quit_action, &QAction::triggered, this, &Clock::close);
-  menu.addAction(quit_action);
+  menu->addAction(quit_action);
 
-  menu.exec(mapToGlobal(pos));
+  // menu.exec(mapToGlobal(pos));
+  menu->exec(event->globalPos());
+  delete menu;
 }

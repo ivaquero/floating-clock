@@ -28,11 +28,8 @@ public:
 
 protected:
   void mousePressEvent(QMouseEvent *event);
-  // void mousePressEvent(QMouseEvent *event) ;
   void mouseMoveEvent(QMouseEvent *event);
-  // void mouseMoveEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
-  // void mouseReleaseEvent(QMouseEvent *event) ;
   void mouseRightMenu(const QPoint &pos);
 
 signals:
@@ -48,6 +45,8 @@ private:
   int font_size_step;
   int font_size;
   QLabel *label;
+
+  void contextMenuEvent(QContextMenuEvent *e);
 };
 
 #endif // CLOCK_H
