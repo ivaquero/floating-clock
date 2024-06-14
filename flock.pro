@@ -6,13 +6,10 @@
 QT = core gui widgets
 
 HEADERS = \
-   $$PWD/clock.h
+   $$PWD/flock.h
 
 SOURCES = \
-   $$PWD/build/CMakeFiles/3.27.1/CompilerIdC/CMakeCCompilerId.c \
-   $$PWD/build/CMakeFiles/3.27.1/CompilerIdCXX/CMakeCXXCompilerId.cpp \
-   $$PWD/clock_autogen/mocs_compilation.cpp \
-   $$PWD/clock.cpp \
+   $$PWD/flock.cpp \
    $$PWD/main.cpp
 
 INCLUDEPATH = \

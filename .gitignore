@@ -191,8 +191,5 @@ _deps
 
 .cache
 .cmake
-.vscode
-.qt
-.qtc
-
-.build
+.qtc_clangd
+build

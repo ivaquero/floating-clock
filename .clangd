@@ -1,0 +1,17 @@
+CompileFlags:
+  Add: [-std=c++14, -Wno-documentation, -Wno-missing-prototypes]
+
+Diagnostics:
+  ClangTidy:
+    Add:
+      [
+        performance-*,
+        bugprone-*,
+        modernize-*,
+        clang-analyzer-*,
+        readability-identifier*,
+      ]
+    CheckOptions:
+      readability-identifier-naming.VariableCase: camelCase
+
+  Suppress: [-Wdeprecated-declarations]

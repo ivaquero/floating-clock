@@ -20,8 +20,8 @@ include_directories(
 )
 
 set (SRCS
-    clock.cpp
-    clock.h
+    flock.cpp
+    flock.h
     main.cpp
 )
 

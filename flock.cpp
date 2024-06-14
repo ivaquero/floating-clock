@@ -1,4 +1,4 @@
-#include "clock.h"
+#include "flock.h"
 
 Clock::Clock(QWidget *parent) : QWidget{parent}, pressed(false) {
   // geometry of Main Window (x, y, width, height)

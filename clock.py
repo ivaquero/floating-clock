@@ -29,9 +29,7 @@ class Clock(QWidget):
         clock.start(1000)  # update the clock per second
         self.show()
 
-        self.settings = QSettings(
-            f"{sys.argv[0]}/../config/config.ini", QSettings.IniFormat
-        )
+        self.settings = QSettings(f"{sys.argv[0]}/../config.ini", QSettings.IniFormat)
         font = QFont()
         font.setFamily(self.settings.value("USER/FONT_FAMILY"))
         font.setPointSize(int(self.settings.value("USER/FONT_SIZE")))
