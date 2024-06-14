@@ -1,4 +1,0 @@
-/Users/integzz/Documents/proj-clock/build/CMakeFiles/clock.dir
-/Users/integzz/Documents/proj-clock/build/CMakeFiles/edit_cache.dir
-/Users/integzz/Documents/proj-clock/build/CMakeFiles/rebuild_cache.dir
-/Users/integzz/Documents/proj-clock/build/CMakeFiles/clock_autogen.dir

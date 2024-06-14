@@ -10,7 +10,7 @@ This project aims to build a cross-platform floating clock based on PySide6 & Qt
 When coding in full screen mode, I often forget the time.
 When on macOS / Linux, the clock on the menu bar is too small to be noticeable, so is the clock on Windows.
 
-![clock](clock.png)
+![clock](doc/clock.png)
 
 ## Roadmap
 
