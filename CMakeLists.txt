@@ -9,15 +9,15 @@ project(clock)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "v")
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt")
 
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
-include_directories(
-    .
-)
+include_directories(.)
 
 set (SRCS
     flock.cpp

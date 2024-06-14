@@ -28,9 +28,9 @@ Clock::Clock(QWidget *parent) : QWidget{parent}, pressed(false) {
   font.setPointSize(settings->value("USER/FONT_SIZE").toInt());
 
   // load settings
-  settings = new QSettings(
-      QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()),
-      QSettings::IniFormat);
+  settings = new QSettings(QString("%1/../floating-clock/config.ini")
+                               .arg(QCoreApplication::applicationDirPath()),
+                           QSettings::IniFormat);
 
   // font object
   font = QFont();
