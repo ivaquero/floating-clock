@@ -27,9 +27,9 @@ public:
   void setBackgroundColor(const class QString &color);
 
 protected:
-  void mousePressEvent(QMouseEvent *event);
-  void mouseMoveEvent(QMouseEvent *event);
-  void mouseReleaseEvent(QMouseEvent *event);
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseMoveEvent(QMouseEvent *event) override;
+  void mouseReleaseEvent(QMouseEvent *event) override;
   void mouseRightMenu(const QPoint &pos);
 
 signals:
@@ -46,7 +46,7 @@ private:
   int font_size;
   QLabel *label;
 
-  void contextMenuEvent(QContextMenuEvent *e);
+  void contextMenuEvent(QContextMenuEvent *e) override;
 };
 
 #endif // CLOCK_H

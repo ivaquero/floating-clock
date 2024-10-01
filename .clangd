@@ -1,5 +1,14 @@
 CompileFlags:
-  Add: [-std=c++14, -Wno-documentation, -Wno-missing-prototypes]
+  Add:
+    [
+      -Wno-documentation,
+      -Wno-missing-prototypes,
+      -std=c++17,
+      --include-directory=/opt/homebrew/include,
+      --include-directory=/opt/homebrew/include/QtGui,
+      --include-directory=/opt/homebrew/include/QtCore,
+      --include-directory=/opt/homebrew/include/QtWidgets,
+    ]
 
 Diagnostics:
   ClangTidy:
