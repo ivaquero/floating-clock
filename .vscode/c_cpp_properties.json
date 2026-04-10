@@ -1,6 +1,36 @@
 {
-    "includePath": "/opt/homebrew/include",
-    "compilerPath": "/usr/bin/clang++",
-    "cStandard": "c11",
-    "cppStandard": "c++17"
+    "configurations": [
+        {
+            "name": "macos-conda-qt",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:HOMEBREW_CELLAR}/qt/6.11.0/include/**",
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-arm64",
+            "configurationProvider": "kylinideteam.cmake-intellisence"
+        },
+        {
+            "name": "win-conda-qt",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\include",
+                "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\include\\qt"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\bin\\g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "kylinideteam.cmake-intellisence"
+        }
+    ],
+    "version": 4
 }
