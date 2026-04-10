@@ -11,9 +11,9 @@
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "-I",
-                "${env:HOMEBREW_CELLAR}/qtbase/6.11.0/include",
+                "/opt/homebrew/opt/qt/include",
                 "-L",
-                "${env:HOMEBREW_CELLAR}/qtbase/6.11.0/lib",
+                "/opt/homebrew/opt/qt/lib",
                 "-lQt6Core",
                 "-lQt6Gui",
                 "-lQt6Widgets"

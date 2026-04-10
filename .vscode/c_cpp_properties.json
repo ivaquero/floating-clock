@@ -4,7 +4,7 @@
             "name": "macos-conda-qt",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${env:HOMEBREW_CELLAR}/qt/6.11.0/include/**",
+                "/opt/homebrew/opt/qt/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang++",

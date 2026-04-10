@@ -5,15 +5,11 @@
 
 QT = core gui widgets
 
-HEADERS = \
-   $$PWD/flock.h
-
 SOURCES = \
-   $$PWD/flock.cpp \
    $$PWD/main.cpp
 
 INCLUDEPATH = \
     $$PWD/.
 
-#DEFINES = 
+#DEFINES =
 
