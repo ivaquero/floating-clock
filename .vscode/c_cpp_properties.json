@@ -1,20 +1,29 @@
 {
     "configurations": [
         {
-            "name": "macos-conda-qt",
+            "name": "macos-qt",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/opt/qt/include"
+                "/opt/homebrew/opt/qt/include",
+                "/opt/homebrew/Cellar/qtbase/6.11.0/lib/QtCore.framework/Headers",
+                "/opt/homebrew/Cellar/qtbase/6.11.0/lib/QtGui.framework/Headers",
+                "/opt/homebrew/Cellar/qtbase/6.11.0/lib/QtWidgets.framework/Headers",
+                "/opt/homebrew/Cellar/qttools/6.11.0/include/QtUiPlugin",
+                "/opt/homebrew/Cellar/qtdeclarative/6.11.0/include/QtQmlDebug"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang++",
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "macos-clang-arm64",
-            "configurationProvider": "kylinideteam.cmake-intellisence"
+            "configurationProvider": "kylinideteam.cmake-intellisence",
+            "macFrameworkPath": [
+                "/opt/homebrew/Cellar/qtbase/6.11.0/lib",
+                "/System/Library/Frameworks"
+            ]
         },
         {
-            "name": "win-conda-qt",
+            "name": "win-qt",
             "includePath": [
                 "${workspaceFolder}/**",
                 "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\include",
