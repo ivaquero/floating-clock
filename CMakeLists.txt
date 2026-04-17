@@ -14,10 +14,12 @@ qt6_standard_project_setup()
 set(SOURCES
     main.cpp
     clockwidget.cpp
+    configmanager.cpp
 )
 
 set(HEADERS
     clockwidget.h
+    configmanager.h
 )
 
 # Create executable

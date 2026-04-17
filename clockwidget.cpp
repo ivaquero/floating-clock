@@ -1,4 +1,5 @@
 #include "clockwidget.h"
+#include "configmanager.h"
 #include <QVBoxLayout>
 #include <QTime>
 #include <QColorDialog>
@@ -128,6 +129,7 @@ void ClockWidget::changeFontColor()
     if (color.isValid())
     {
         m_fontColor = color;
+        m_configManager->setFontColor(m_fontColor);
         updateStyleSheet();
     }
 }
@@ -138,6 +140,7 @@ void ClockWidget::changeBackgroundColor()
     if (color.isValid())
     {
         m_backgroundColor = color;
+        m_configManager->setBackgroundColor(m_backgroundColor);
         updateStyleSheet();
     }
 }
@@ -149,6 +152,7 @@ void ClockWidget::changeFontSize()
     if (ok)
     {
         m_fontSize = size;
+        m_configManager->setFontSize(m_fontSize);
         updateStyleSheet();
     }
 }
@@ -158,7 +162,7 @@ void ClockWidget::resetSettings()
     int ret = QMessageBox::question(this, "Reset Settings", "Are you sure you want to reset all settings?");
     if (ret == QMessageBox::Yes)
     {
-        m_settings->clear();
+        m_configManager->resetToDefaults();
         loadSettings();
         updateStyleSheet();
     }
@@ -171,27 +175,55 @@ void ClockWidget::quitApplication()
 
 void ClockWidget::loadSettings()
 {
-    m_settings = new QSettings("QFlock", "Clock", this);
+    m_configManager = new ConfigManager(this);
 
-    m_fontColor = m_settings->value("fontColor", QColor(255, 255, 255)).value<QColor>();
-    m_backgroundColor = m_settings->value("backgroundColor", QColor(0, 0, 0, 150)).value<QColor>();
-    m_fontSize = m_settings->value("fontSize", 24).toInt();
-    m_alwaysOnTop = m_settings->value("alwaysOnTop", true).toBool();
+    // Load from XML config file
+    if (!m_configManager->loadSettings())
+    {
+        // If loading fails, config manager already has default values
+        qDebug() << "Using default settings";
+    }
+
+    // Apply loaded settings
+    m_fontColor = m_configManager->fontColor();
+    m_backgroundColor = m_configManager->backgroundColor();
+    m_fontSize = m_configManager->fontSize();
+    m_alwaysOnTop = m_configManager->alwaysOnTop();
 
     // Restore window position
-    QPoint pos = m_settings->value("position", QPoint(100, 100)).toPoint();
-    move(pos);
+    move(m_configManager->windowPosition());
+
+    // Update always on top checkbox in menu
+    QList<QAction *> actions = m_contextMenu->actions();
+    for (QAction *action : actions)
+    {
+        if (action->text() == "Always on Top")
+        {
+            action->setChecked(m_alwaysOnTop);
+            break;
+        }
+    }
 
     updateStyleSheet();
 }
 
 void ClockWidget::saveSettings()
 {
-    m_settings->setValue("fontColor", m_fontColor);
-    m_settings->setValue("backgroundColor", m_backgroundColor);
-    m_settings->setValue("fontSize", m_fontSize);
-    m_settings->setValue("alwaysOnTop", m_alwaysOnTop);
-    m_settings->setValue("position", pos());
+    if (!m_configManager)
+        return;
+
+    // Update config manager with current values
+    m_configManager->setFontColor(m_fontColor);
+    m_configManager->setBackgroundColor(m_backgroundColor);
+    m_configManager->setFontSize(m_fontSize);
+    m_configManager->setAlwaysOnTop(m_alwaysOnTop);
+    m_configManager->setWindowPosition(pos());
+
+    // Save to XML file
+    if (!m_configManager->saveSettings())
+    {
+        qDebug() << "Failed to save settings to config.xml";
+    }
 }
 
 void ClockWidget::updateStyleSheet()

@@ -1,4 +1,4 @@
-﻿# ⏰ Flock
+# ⏰ Flock
 
 ![code size](https://img.shields.io/github/languages/code-size/ivaquero/floating-clock.svg)
 ![repo size](https://img.shields.io/github/repo-size/ivaquero/floating-clock.svg)
@@ -18,16 +18,16 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
   - [ ] Frameless
   - [x] Drag and Move
   - [x] Right Click Menu
-  - [ ] Always On Top
+  - [x] Always On Top
   - [ ] Show in Fullscreen Mode
 - [x] **Style**
   - [x] Set Background Color
   - [x] Set Font Color
   - [x] Set FontSize
-- [ ] **Configuration File** (XML)
-  - [ ] Read Settings
-  - [ ] Write Settings
-  - [ ] Reset Settings
+- [x] **Configuration File** (XML)
+  - [x] Read Settings
+  - [x] Write Settings
+  - [x] Reset Settings
 - [ ] **Time**
   - [ ] Select Time Zone
   - [ ] Set Alarms
@@ -73,11 +73,24 @@ make
 ./flock
 ```
 
+### Configuration
+
+The application now uses XML configuration files instead of QSettings. Configuration is stored in `config.xml` with the following options:
+
+- **FontColor**: Font color in hex format
+- **BackgroundColor**: Background color with alpha transparency
+- **FontSize**: Font size in points (8-72)
+- **AlwaysOnTop**: Window always stays on top
+- **WindowPosition**: Window position coordinates
+
+The configuration file is automatically created when you first run the application and make changes to settings.
+
 ### Usage
 
 - **Move**: Left-click and drag
 - **Menu**: Right-click for context menu
 - **Customize**: Change colors, font size, always-on-top behavior
+- **Configuration**: Settings are saved to `config.xml` and persist between sessions
 
 ### Project Structure
 
@@ -88,6 +101,7 @@ qflock/
 │   ├── *.o                   # Object files
 │   ├── moc_*.cpp            # Qt meta-object compiler output
 │   └── Makefile             # Build file
+├── config.xml               # XML configuration file
 ├── build.sh                 # One-click build script
 ├── clean.sh                 # Clean script
 ├── flock.pro                # qmake project file

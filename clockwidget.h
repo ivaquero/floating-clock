@@ -7,9 +7,9 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QAction>
-#include <QSettings>
-#include <QFont>
 #include <QColor>
+
+class ConfigManager;
 
 class ClockWidget : public QWidget
 {
@@ -49,7 +49,7 @@ private:
     bool m_dragging;
 
     // Settings
-    QSettings *m_settings;
+    ConfigManager *m_configManager;
     QColor m_fontColor;
     QColor m_backgroundColor;
     int m_fontSize;

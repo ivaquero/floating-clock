@@ -7,10 +7,12 @@ QT = core gui widgets
 
 SOURCES = \
    $$PWD/main.cpp \
-   $$PWD/clockwidget.cpp
+   $$PWD/clockwidget.cpp \
+   $$PWD/configmanager.cpp
 
 HEADERS = \
-   $$PWD/clockwidget.h
+   $$PWD/clockwidget.h \
+   $$PWD/configmanager.h
 
 INCLUDEPATH = \
     $$PWD/.
