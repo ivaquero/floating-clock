@@ -1,11 +1,15 @@
 #include <QApplication>
-#include "FloatingClock.h"
+#include "clockwidget.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    FloatingClock clock;
+    app.setApplicationName("QFlock");
+    app.setOrganizationName("QFlock");
+    app.setApplicationDisplayName("QFlock");
+
+    ClockWidget clock;
     clock.show();
 
     return app.exec();
