@@ -1,4 +1,4 @@
-#include "configmanager.h"
+#include "config_manager.h"
 #include <QFile>
 #include <QDebug>
 
@@ -26,7 +26,7 @@ bool ConfigManager::loadSettings(const QString &filename)
     QXmlStreamReader reader(&file);
 
     // Check if it's a valid XML file
-    if (!reader.readNextStartElement() || reader.name() != "QFlockConfig")
+    if (!reader.readNextStartElement() || reader.name() != QString("QFlockConfig"))
     {
         qDebug() << "Invalid config file format";
         file.close();
@@ -53,7 +53,7 @@ bool ConfigManager::loadSettings(const QString &filename)
         }
         else if (name == "AlwaysOnTop")
         {
-            m_alwaysOnTop = (text.toLower() == "true");
+            m_alwaysOnTop = (text.toLower() == QString("true"));
         }
         else if (name == "WindowPosition")
         {
@@ -64,6 +64,17 @@ bool ConfigManager::loadSettings(const QString &filename)
                 int x = coords[0].toInt();
                 int y = coords[1].toInt();
                 m_windowPosition = QPoint(x, y);
+            }
+        }
+        else if (name == "WindowSize")
+        {
+            // Parse size format: "width,height"
+            QStringList dims = text.split(',');
+            if (dims.size() == 2)
+            {
+                int width = dims[0].toInt();
+                int height = dims[1].toInt();
+                m_windowSize = QSize(width, height);
             }
         }
         else
@@ -117,6 +128,12 @@ bool ConfigManager::saveSettings(const QString &filename)
                               .arg(m_windowPosition.y());
     writer.writeTextElement("WindowPosition", positionStr);
 
+    // Window size
+    QString sizeStr = QString("%1,%2")
+                          .arg(m_windowSize.width())
+                          .arg(m_windowSize.height());
+    writer.writeTextElement("WindowSize", sizeStr);
+
     // Close root element
     writer.writeEndElement();
 
@@ -143,4 +160,5 @@ void ConfigManager::setDefaultValues()
     m_fontSize = 24;
     m_alwaysOnTop = true;
     m_windowPosition = QPoint(100, 100);
+    m_windowSize = QSize(200, 80); // Default clock size
 }

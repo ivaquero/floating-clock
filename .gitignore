@@ -47,48 +47,7 @@
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
 ### C++ ###
-# Prerequisites
-
-# Compiled Object files
-*.slo
-
-# Precompiled Headers
-
-# Compiled Dynamic libraries
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-
-# Executables
-
-## Various built-in generators
-# cmake_find_package generator https://docs.conan.io/en/latest/reference/generators/cmake_find_package.html
-Find*.cmake
-
-# cmake_paths generator https://docs.conan.io/en/1.4/integrations/cmake/cmake_paths_generator.html
-conan_paths.*
-
-# Environment activation scripts produced by https://docs.conan.io/en/latest/mastering/virtualenv.html#virtualenv-generator
-activate_run.ps1
-activate_run.sh
-deactivate_run.ps1
-deactivate_run.sh
-environment_run.ps1.env
-environment_run.sh.env
 
 # C++ objects and libs
 *.slo
@@ -102,31 +61,6 @@ environment_run.sh.env
 *.dll
 *.dylib
 
-# Qt-es
-object_script.*.Release
-object_script.*.Debug
-*_plugin_import.cpp
-/.qmake.cache
-/.qmake.stash
-*.pro.user
-*.pro.user.*
-*.qbs.user
-*.qbs.user.*
-*.moc
-moc_*.cpp
-moc_*.h
-qrc_*.cpp
-ui_*.h
-*.qmlc
-*.jsc
-Makefile*
-*build-*
-*.qm
-*.prl
-
-# Qt unit tests
-target_wrapper.*
-
 # QtCreator
 *.autosave
 
@@ -136,14 +70,6 @@ target_wrapper.*
 
 # QtCreator CMake
 CMakeLists.txt.user*
-
-# QtCreator 4.8< compilation database
-compile_commands.json
-
-# QtCreator local machine specific files for imported projects
-*creator.user*
-
-*_qmlcache.qrc
 
 ### macOS ###
 # General
@@ -157,39 +83,10 @@ Icon
 # Thumbnails
 ._*
 
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-### macOS Patch ###
-# iCloud generated files
-*.icloud
-
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-
+##
 .cache
 .cmake
 .qtc_clangd
+.qmake.stash
 build
+*.dmg

@@ -1,4 +1,4 @@
-# QFlock - Qt6 浮动时钟
+# Clouck 浮动时钟
 
 ## 功能特性
 
@@ -11,7 +11,7 @@
 - **透明背景** - 支持半透明背景效果
 - **自定义样式** - 可调整字体颜色、背景颜色、字体大小
 - **设置持久化** - 自动保存和恢复用户设置
-- **跨平台支持** - 基于Qt6，支持macOS/Linux/Windows
+- **跨平台支持** - 基于Qt6，支持 macOS/Linux/Windows
 
 ## 使用方法
 
@@ -38,8 +38,8 @@
 ./build.sh
 
 # 运行应用
-./build/flock.app/Contents/MacOS/flock  # macOS
-./build/flock                           # Linux
+./build/Clouck.app/Contents/MacOS/Clouck  # macOS
+./build/Clouck                           # Linux
 ```
 
 #### 手动构建：
@@ -49,14 +49,14 @@
 ./clean.sh
 
 # 生成Makefile
-qmake flock.pro
+qmake Clouck.pro
 
 # 编译
 make
 
 # 运行
-./build/flock.app/Contents/MacOS/flock  # macOS
-./build/flock                             # Linux
+./build/Clouck.app/Contents/MacOS/Clouck  # macOS
+./build/Clouck                             # Linux
 ```
 
 #### 使用CMake构建：
@@ -65,22 +65,22 @@ make
 mkdir build && cd build
 cmake ..
 make
-./flock
+./Clouck
 ```
 
 ### 项目结构
 
 ```text
-qflock/
+qClouck/
 ├── build/                    # 构建输出目录
-│   ├── flock.app/           # macOS应用包
+│   ├── Clouck.app/           # macOS应用包
 │   ├── *.o                   # 目标文件
 │   ├── moc_*.cpp            # Qt元对象编译器输出
 │   └── Makefile             # 构建文件
 ├── src/                     # 源代码（建议）
 ├── build.sh                 # 一键构建脚本
 ├── clean.sh                 # 清理脚本
-├── flock.pro                # qmake项目文件
+├── Clouck.pro                # qmake项目文件
 ├── CMakeLists.txt           # CMake项目文件
 └── README.md
 ```
@@ -98,13 +98,13 @@ qflock/
 ### 构建输出管理
 
 - 所有编译生成的文件（.o, moc_*.cpp, Makefile等）都会输出到`build/`目录
-- 可执行文件位于`build/flock.app/Contents/MacOS/flock`（macOS）或`build/flock`（Linux）
+- 可执行文件位于`build/Clouck.app/Contents/MacOS/Clouck`（macOS）或`build/Clouck`（Linux）
 - 使用`./clean.sh`可以快速清理所有构建文件
 - 使用`./build.sh`可以进行完整的一键构建
 
 ### 自定义构建配置
 
-可以在`flock.pro`中修改以下配置：
+可以在`Clouck.pro`中修改以下配置：
 
 - `DESTDIR`：可执行文件输出目录
 - `OBJECTS_DIR`：目标文件输出目录

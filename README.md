@@ -1,7 +1,9 @@
-# ⏰ Flock
+# ☁ Clouck
 
-![code size](https://img.shields.io/github/languages/code-size/ivaquero/floating-clock.svg)
-![repo size](https://img.shields.io/github/repo-size/ivaquero/floating-clock.svg)
+![Build Qt](https://github.com/ivaquero/clouck/workflows/Build%20Qt%20Application/badge.svg)
+![Release](https://github.com/ivaquero/clouck/workflows/Build%20and%20Release%20Clouck/badge.svg)
+![code size](https://img.shields.io/github/languages/code-size/ivaquero/clouck.svg)
+![repo size](https://img.shields.io/github/repo-size/ivaquero/clouck.svg)
 
 This project aims to build a cross-platform floating clock based on Qt6.
 
@@ -15,10 +17,11 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
 ## ✨ Features
 
 - [ ] **Main Window**
-  - [ ] Frameless
+  - [x] Always On Top
+  - [x] Frameless
   - [x] Drag and Move
   - [x] Right Click Menu
-  - [x] Always On Top
+  - [x] Resizable
   - [ ] Show in Fullscreen Mode
 - [x] **Style**
   - [x] Set Background Color
@@ -30,7 +33,6 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
   - [x] Reset Settings
 - [ ] **Time**
   - [ ] Select Time Zone
-  - [ ] Set Alarms
 
 ## Quick Start
 
@@ -72,6 +74,37 @@ cmake ..
 make
 ./flock
 ```
+
+## 🚀 GitHub Actions
+
+This project uses GitHub Actions for automated building and releasing:
+
+### CI/CD Workflows
+
+- **CI Build**: Validates builds on all platforms for every push/PR
+- **Build Qt**: Comprehensive builds using both qmake and CMake
+- **Release**: Creates distributable packages for tagged releases
+
+### Download Pre-built Binaries
+
+Visit the [Releases](https://github.com/ivaquero/clouck/releases) page to download pre-built binaries for:
+
+- **macOS**: DMG installer with native app bundle
+- **Windows**: ZIP package with all dependencies
+- **Linux**: TAR.GZ package with shared libraries
+
+### Creating a Release
+
+1. Tag a new version:
+
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+2. GitHub Actions will automatically build and create a release with binaries for all platforms
+
+See [`.github/workflows/`](.github/workflows/) for detailed workflow configuration.
 
 ### Configuration
 

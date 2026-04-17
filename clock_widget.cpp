@@ -1,23 +1,36 @@
-#include "clockwidget.h"
-#include "configmanager.h"
+#include "clock_widget.h"
+#include "config_manager.h"
+#include "window_helper.h"
 #include <QVBoxLayout>
 #include <QTime>
 #include <QColorDialog>
 #include <QFontDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QApplication>
 
 ClockWidget::ClockWidget(QWidget *parent)
-    : QWidget(parent), m_dragging(false)
+    : QWidget(parent), m_dragging(false), m_resizing(false), m_resizeBorder(5)
 {
     setupUI();
     createMenu();
     loadSettings();
 
-    // Set window properties
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+    // Set window properties for cross-platform always-on-top
+    Qt::WindowFlags flags = Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool;
+
+#ifdef Q_OS_MAC
+    // On macOS, we need additional flags for proper always-on-top behavior in fullscreen
+    flags |= Qt::WindowDoesNotAcceptFocus;
+    setAttribute(Qt::WA_ShowWithoutActivating);
+#endif
+
+    setWindowFlags(flags);
     setAttribute(Qt::WA_TranslucentBackground);
-    setFixedSize(200, 80);
+    setMouseTracking(true); // Enable mouse tracking for resize cursor
+
+    // Set up platform-specific window properties after window creation
+    WindowHelper::setupAlwaysOnTopForFullscreen(this);
 
     // Start timer
     m_timer = new QTimer(this);
@@ -29,7 +42,7 @@ ClockWidget::ClockWidget(QWidget *parent)
 
 ClockWidget::~ClockWidget()
 {
-    saveSettings();
+    // Settings are now saved immediately after changes, no need to save here
 }
 
 void ClockWidget::setupUI()
@@ -80,18 +93,81 @@ void ClockWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        m_dragging = true;
-        m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
-        event->accept();
+        if (isInResizeArea(event->pos()))
+        {
+            m_resizing = true;
+            m_resizeStartPos = event->globalPosition().toPoint();
+            m_resizeStartSize = size();
+            event->accept();
+        }
+        else
+        {
+            m_dragging = true;
+            m_dragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
+            event->accept();
+        }
     }
 }
 
 void ClockWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (m_dragging && (event->buttons() & Qt::LeftButton))
+    if (m_resizing && (event->buttons() & Qt::LeftButton))
+    {
+        QPoint delta = event->globalPosition().toPoint() - m_resizeStartPos;
+        QSize newSize = m_resizeStartSize + QSize(delta.x(), delta.y());
+
+        // Minimum size constraints
+        newSize = newSize.expandedTo(QSize(100, 50));
+
+        resize(newSize);
+        event->accept();
+    }
+    else if (m_dragging && (event->buttons() & Qt::LeftButton))
     {
         move(event->globalPosition().toPoint() - m_dragPosition);
         event->accept();
+    }
+    else
+    {
+        // Update cursor shape when hovering over resize area
+        if (isInResizeArea(event->pos()))
+        {
+            setCursor(Qt::SizeFDiagCursor);
+        }
+        else
+        {
+            setCursor(Qt::ArrowCursor);
+        }
+    }
+}
+
+void ClockWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        if (m_resizing)
+        {
+            m_resizing = false;
+            // Save the new size and position to config
+            if (m_configManager)
+            {
+                m_configManager->setWindowPosition(pos());
+                m_configManager->setWindowSize(size());
+                m_configManager->saveSettings();
+            }
+            event->accept();
+        }
+        else if (m_dragging)
+        {
+            m_dragging = false;
+            // Save the new position to config
+            if (m_configManager)
+            {
+                m_configManager->setWindowPosition(pos());
+                m_configManager->saveSettings();
+            }
+            event->accept();
+        }
     }
 }
 
@@ -121,6 +197,12 @@ void ClockWidget::toggleAlwaysOnTop()
     }
     setWindowFlags(flags);
     show();
+
+    // Re-apply platform-specific window properties after changing window flags
+    if (m_alwaysOnTop)
+    {
+        WindowHelper::setupAlwaysOnTopForFullscreen(this);
+    }
 }
 
 void ClockWidget::changeFontColor()
@@ -165,12 +247,22 @@ void ClockWidget::resetSettings()
         m_configManager->resetToDefaults();
         loadSettings();
         updateStyleSheet();
+        // Reset to default size
+        resize(m_configManager->windowSize());
     }
 }
 
 void ClockWidget::quitApplication()
 {
     qApp->quit();
+}
+
+bool ClockWidget::isInResizeArea(const QPoint &pos) const
+{
+    // Check if mouse is in the bottom-right corner resize area
+    QRect resizeArea(rect().bottomRight() - QPoint(m_resizeBorder * 2, m_resizeBorder * 2),
+                     QSize(m_resizeBorder * 2, m_resizeBorder * 2));
+    return resizeArea.contains(pos);
 }
 
 void ClockWidget::loadSettings()
@@ -190,14 +282,15 @@ void ClockWidget::loadSettings()
     m_fontSize = m_configManager->fontSize();
     m_alwaysOnTop = m_configManager->alwaysOnTop();
 
-    // Restore window position
+    // Restore window position and size
     move(m_configManager->windowPosition());
+    resize(m_configManager->windowSize());
 
     // Update always on top checkbox in menu
     QList<QAction *> actions = m_contextMenu->actions();
     for (QAction *action : actions)
     {
-        if (action->text() == "Always on Top")
+        if (action->text() == QString("Always on Top"))
         {
             action->setChecked(m_alwaysOnTop);
             break;
@@ -218,6 +311,7 @@ void ClockWidget::saveSettings()
     m_configManager->setFontSize(m_fontSize);
     m_configManager->setAlwaysOnTop(m_alwaysOnTop);
     m_configManager->setWindowPosition(pos());
+    m_configManager->setWindowSize(size());
 
     // Save to XML file
     if (!m_configManager->saveSettings())

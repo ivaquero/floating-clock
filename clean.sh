@@ -10,9 +10,9 @@ if [ -d "build" ]; then
 fi
 
 # Delete .app bundle
-if [ -d "flock.app" ]; then
-    rm -rf flock.app
-    echo "flock.app deleted"
+if [ -d "Clouck.app" ]; then
+    rm -rf Clouck.app
+    echo "Clouck.app deleted"
 fi
 
 echo "Cleanup complete!"

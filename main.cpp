@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "clockwidget.h"
+#include "clock_widget.h"
 
 int main(int argc, char *argv[])
 {

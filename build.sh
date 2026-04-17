@@ -12,18 +12,18 @@ rm -rf build/*
 
 # Generate Makefile using qmake
 echo "Generating Makefile..."
-qmake flock.pro
+qmake Clouck.pro
 
 # Build project
 echo "Starting compilation..."
 make
 
 # Check build result
-if [ -f "build/flock.app/Contents/MacOS/flock" ] || [ -f "build/flock" ]; then
+if [ -f "build/Clouck.app/Contents/MacOS/Clouck" ] || [ -f "build/Clouck" ]; then
     echo "Build successful!"
     echo "Executable location:"
-    [ -f "build/flock.app/Contents/MacOS/flock" ] && echo "  - build/flock.app/Contents/MacOS/flock (macOS)"
-    [ -f "build/flock" ] && echo "  - build/flock (Linux)"
+    [ -f "build/Clouck.app/Contents/MacOS/Clouck" ] && echo "  - build/Clouck.app/Contents/MacOS/Clouck (macOS)"
+    [ -f "build/Clouck" ] && echo "  - build/Clouck (Linux)"
 else
     echo "Build failed!"
     exit 1

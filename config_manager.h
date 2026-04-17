@@ -1,9 +1,10 @@
-#ifndef CONFIGMANAGER_H
-#define CONFIGMANAGER_H
+#ifndef CONFIG_MANAGER_H
+#define CONFIG_MANAGER_H
 
 #include <QObject>
 #include <QColor>
 #include <QPoint>
+#include <QSize>
 #include <QString>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -27,6 +28,7 @@ public:
     int fontSize() const { return m_fontSize; }
     bool alwaysOnTop() const { return m_alwaysOnTop; }
     QPoint windowPosition() const { return m_windowPosition; }
+    QSize windowSize() const { return m_windowSize; }
 
     // Setters
     void setFontColor(const QColor &color) { m_fontColor = color; }
@@ -34,6 +36,7 @@ public:
     void setFontSize(int size) { m_fontSize = size; }
     void setAlwaysOnTop(bool onTop) { m_alwaysOnTop = onTop; }
     void setWindowPosition(const QPoint &pos) { m_windowPosition = pos; }
+    void setWindowSize(const QSize &size) { m_windowSize = size; }
 
     // Reset to default values
     void resetToDefaults();
@@ -51,6 +54,7 @@ private:
     int m_fontSize;
     bool m_alwaysOnTop;
     QPoint m_windowPosition;
+    QSize m_windowSize;
 };
 
-#endif // CONFIGMANAGER_H
+#endif // CONFIG_MANAGER_H

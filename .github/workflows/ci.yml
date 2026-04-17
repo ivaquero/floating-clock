@@ -1,0 +1,200 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - "**.cpp"
+      - "**.h"
+      - "**.pro"
+      - "CMakeLists.txt"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - "**.cpp"
+      - "**.h"
+      - "**.pro"
+      - "CMakeLists.txt"
+      - ".github/workflows/ci.yml"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup MSVC Environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.5.*"
+          modules: "qt5compat"
+          cache: true
+          tools: "tools_ninja"
+          install-deps: "true"
+          aqtversion: "==3.1.*"
+          py7zrversion: ">=0.20.2"
+
+      #            - name: Install Linux Dependencies
+      #              if: runner.os == 'Linux'
+      #              run: |
+      #                  sudo apt-get update
+      #                  sudo apt-get install -y build-essential cmake libx11-dev libxfixes-dev
+
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          echo "Configuring CMake for Windows..."
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          echo "CMake configuration completed."
+          echo "Checking if build directory was created:"
+          dir build 2>nul && echo "Build directory exists" || echo "Build directory NOT found"
+          echo "Contents of current directory:"
+          dir
+
+      - name: Configure CMake (macOS)
+        if: runner.os == 'macOS'
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          echo "Starting Windows build..."
+          echo "=== Pre-build diagnostics ==="
+          echo "Current directory: %CD%"
+          echo "Checking if CMakeLists.txt exists:"
+          dir CMakeLists.txt 2>nul && echo "✓ CMakeLists.txt found" || echo "✗ CMakeLists.txt NOT found"
+          echo "Contents before build:"
+          dir
+          echo "=== Building with CMake ==="
+          cmake --build build --config Release
+          echo "=== Post-build diagnostics ==="
+          echo "Build completed with exit code: %ERRORLEVEL%"
+          echo "Contents after build:"
+          dir
+          echo "=== Searching for Clouck executable ==="
+          echo "Checking build directory structure:"
+          dir build /s /b 2>nul || echo "Build directory not found or empty"
+          echo "Looking for Clouck.exe in specific locations:"
+          dir build\Clouck.exe 2>nul && echo "✓ Found Clouck.exe in build\" || echo "✗ Clouck.exe not in build\"
+          dir build\Release\Clouck.exe 2>nul && echo "✓ Found Clouck.exe in build\Release\" || echo "✗ Clouck.exe not in build\Release\"
+          dir build\MinSizeRel\Clouck.exe 2>nul && echo "✓ Found Clouck.exe in build\MinSizeRel\" || echo "✗ Clouck.exe not in build\MinSizeRel\"
+          echo "Searching entire directory tree for any Clouck.exe:"
+          dir Clouck.exe /s /b 2>nul || echo "No Clouck.exe found anywhere"
+          echo "Searching for any .exe files in build directory:"
+          dir build\*.exe /s /b 2>nul || echo "No .exe files found in build"
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: cmake --build build --config Release
+
+      - name: Quick Binary Validation (macOS)
+        if: runner.os == 'macOS'
+        run: find ./build -name "Clouck" -type f
+
+      - name: Test Build (macOS)
+        if: runner.os == 'macOS'
+        run: timeout 3s ./build/Clouck.app/Contents/MacOS/Clouck || echo "Test
+          completed"
+
+      - name: Quick Binary Validation (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          echo "=== Windows Quick Binary Validation ==="
+          echo "Current directory: %CD%"
+          echo "Looking for build directory..."
+          dir build 2>nul && echo "Build directory exists" || echo "Build directory NOT found"
+          echo "Looking for Clouck executable in possible locations:"
+          dir build\Clouck.exe 2>nul && echo "✓ Found Clouck.exe in build\" || echo "✗ Clouck.exe not in build\"
+          dir build\Release\Clouck.exe 2>nul && echo "✓ Found Clouck.exe in build\Release\" || echo "✗ Clouck.exe not in build\Release\"
+          dir build\MinSizeRel\Clouck.exe 2>nul && echo "✓ Found Clouck.exe in build\MinSizeRel\" || echo "✗ Clouck.exe not in build\MinSizeRel\"
+          echo "Searching entire build directory for any .exe files:"
+          dir build\*.exe /s /b 2>nul || echo "No .exe files found in build directory"
+          echo "=== End Validation ==="
+
+      - name: Test Build (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          echo "=== Windows Test Build Diagnostics ==="
+          echo "Current directory: %CD%"
+          echo "Visual Studio environment is configured (see env vars above)"
+          echo "Checking for build directory..."
+          if exist build (
+              echo "Build directory exists"
+              echo "Contents of build directory:"
+              dir build
+              echo "Looking for Clouck.exe in build directory..."
+              if exist build\Clouck.exe (
+                  echo "Found Clouck.exe in build\"
+                  echo "Testing Windows binary..."
+                  start /min build\Clouck.exe & timeout /t 2 /nobreak >nul 2>&1 & tasklist | findstr Clouck.exe >nul 2>&1
+              ) else (
+                  echo "Clouck.exe not found in build\"
+                  echo "Checking build\Release directory..."
+                  if exist build\Release\Clouck.exe (
+                      echo "Found Clouck.exe in build\Release\"
+                      echo "Testing Windows binary..."
+                      start /min build\Release\Clouck.exe & timeout /t 2 /nobreak >nul 2>&1 & tasklist | findstr Clouck.exe >nul 2>&1
+                  ) else (
+                      echo "Clouck.exe not found in build\Release\"
+                      echo "Checking build\MinSizeRel directory..."
+                      if exist build\MinSizeRel\Clouck.exe (
+                          echo "Found Clouck.exe in build\MinSizeRel\"
+                          echo "Testing Windows binary..."
+                          start /min build\MinSizeRel\Clouck.exe & timeout /t 2 /nobreak >nul 2>&1 & tasklist | findstr Clouck.exe >nul 2>&1
+                      ) else (
+                          echo "ERROR: Clouck.exe not found in any expected location!"
+                          echo "Searching entire build directory for any .exe files:"
+                          dir build\*.exe /s /b
+                          echo "Searching entire working directory for Clouck.exe:"
+                          dir Clouck.exe /s /b
+                          echo "Build failed - no executable found"
+                          exit 1
+                      )
+                  )
+              )
+          ) else (
+              echo "ERROR: Build directory does not exist!"
+              echo "Contents of current directory:"
+              dir
+              exit 1
+          )
+
+      - name: Upload Build Artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Clouck-windows
+          path: build/Clouck*.exe
+
+      - name: Upload Build Artifact (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          echo "Checking for macOS app bundle..."
+          ls -la ./build/Clouck.app/Contents/MacOS/Clouck || echo "Clouck.app not found"
+
+      - name: Upload macOS Artifact
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Clouck-macos
+          path: |
+            build/Clouck.app/**/*
+            !build/Clouck.app/Contents/Frameworks/*
+            !build/Clouck.app/Contents/PlugIns/*

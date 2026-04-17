@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QFlockConfig>
-    <FontColor>#ffffff</FontColor>
+    <FontColor>#ffffffff</FontColor>
     <BackgroundColor>#96000000</BackgroundColor>
     <FontSize>24</FontSize>
     <AlwaysOnTop>true</AlwaysOnTop>
-    <WindowPosition>100,100</WindowPosition>
+    <WindowPosition>1132,708</WindowPosition>
+    <WindowSize>137,59</WindowSize>
 </QFlockConfig>

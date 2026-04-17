@@ -1,5 +1,5 @@
-#ifndef CLOCKWIDGET_H
-#define CLOCKWIDGET_H
+#ifndef CLOCK_WIDGET_H
+#define CLOCK_WIDGET_H
 
 #include <QWidget>
 #include <QLabel>
@@ -22,6 +22,7 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
 
 private slots:
@@ -48,12 +49,25 @@ private:
     QPoint m_dragPosition;
     bool m_dragging;
 
+    // Resize related
+    bool m_resizing;
+    QPoint m_resizeStartPos;
+    QSize m_resizeStartSize;
+    int m_resizeBorder;
+
     // Settings
     ConfigManager *m_configManager;
     QColor m_fontColor;
     QColor m_backgroundColor;
     int m_fontSize;
     bool m_alwaysOnTop;
+
+    // Helper methods
+    bool isInResizeArea(const QPoint &pos) const;
+
+#ifdef Q_OS_MAC
+    void setupMacOSWindowProperties();
+#endif
 };
 
-#endif // CLOCKWIDGET_H
+#endif // CLOCK_WIDGET_H
