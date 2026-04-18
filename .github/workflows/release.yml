@@ -15,6 +15,10 @@ on:
         required: true
         default: "v1.0.0"
 
+permissions:
+  contents: write
+  pull-requests: read
+
 jobs:
   build-macos:
     runs-on: macos-latest
@@ -191,6 +195,9 @@ jobs:
     needs: [ build-macos, build-windows, build-linux ]
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       changelog: ${{ steps.changelog.outputs.changelog }}
       version: ${{ steps.version.outputs.version }}
@@ -229,6 +236,9 @@ jobs:
     needs: [ build-macos, build-windows, build-linux, generate-changelog ]
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      contents: write
+      pull-requests: read
 
     steps:
       - name: Download All Artifacts
@@ -277,5 +287,4 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
