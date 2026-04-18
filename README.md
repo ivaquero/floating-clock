@@ -16,22 +16,27 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
 
 ## ✨ Features
 
-- [ ] **Main Window**
+- Cross Platform
+  - [x] MacOS
+  - [x] Windows
+  - [ ] Linux
+- [x] **Main Window**
   - [x] Always On Top
   - [x] Frameless
   - [x] Drag and Move
-  - [x] Right Click Menu
   - [x] Resizable
-  - [ ] Show in Fullscreen Mode
+  - [x] Show in Fullscreen Mode
 - [x] **Style**
+  - [x] Right Click Menu
   - [x] Set Background Color
+  - [ ] Transparent Background
   - [x] Set Font Color
   - [x] Set FontSize
-- [x] **Configuration File** (XML)
+- [x] **Tweakable** (XML)
   - [x] Read Settings
   - [x] Write Settings
   - [x] Reset Settings
-- [ ] **Time**
+- [ ] **Time Zone**
   - [ ] Select Time Zone
 
 ## Quick Start
@@ -103,8 +108,6 @@ Visit the [Releases](https://github.com/ivaquero/clouck/releases) page to downlo
    ```
 
 2. GitHub Actions will automatically build and create a release with binaries for all platforms
-
-See [`.github/workflows/`](.github/workflows/) for detailed workflow configuration.
 
 ### Configuration
 

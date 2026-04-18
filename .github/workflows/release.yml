@@ -1,285 +1,281 @@
 name: Build and Release Clouck
 
 on:
-    push:
-        tags:
-            - "v*"
-    workflow_dispatch:
-        inputs:
-            version:
-                description: "Version to build (e.g., v1.0.0)"
-                required: true
-                default: "v1.0.0"
+  push:
+    tags:
+      - "v*"
+      - "[0-9]+.[0-9]+.[0-9]+"
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (e.g., v1.0.0)"
+        required: true
+        default: "v1.0.0"
 
 jobs:
-    build-macos:
-        runs-on: macos-latest
-        steps:
-            - uses: actions/checkout@v6
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
 
-            - name: Install Qt
-              uses: jurplel/install-qt-action@v4
-              with:
-                  version: "6.5.*"
-                  cache: true
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.5.*"
+          cache: true
 
-            - name: Configure CMake
-              run: |
-                  cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+      - name: Configure and Build
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
 
-            - name: Build
-              run: cmake --build build --config Release
+      - name: Create macOS App Bundle
+        run: |
+          # Check what was actually built
+          echo "Contents of build directory:"
+          ls -la build/
 
-            - name: Create macOS App Bundle
-              run: |
-                  # Debug: Check current directory and build output
-                  echo "Current directory: $(pwd)"
-                  echo "Build directory contents:"
-                  ls -la build/
-                  echo "Checking if Clouck executable exists:"
-                  ls -la build/Clouck || echo "ERROR: Clouck executable not found!"
+          # Look for the .app bundle or executable
+          if [ -d "build/Clouck.app" ]; then
+            echo "Found .app bundle"
+            cp -r build/Clouck.app ./
+          elif [ -f "build/Clouck" ]; then
+            echo "Found standalone executable"
+            # Create app bundle
+            mkdir -p Clouck.app/Contents/MacOS
+            mkdir -p Clouck.app/Contents/Resources
+            cp build/Clouck Clouck.app/Contents/MacOS/
+          else
+            echo "Looking for executable in build directory..."
+            find build/ -name "Clouck*" -type f
+            # Try to find and copy the first executable
+            EXECUTABLE=$(find build/ -name "Clouck*" -type f | head -1)
+            if [ -n "$EXECUTABLE" ]; then
+              echo "Found executable: $EXECUTABLE"
+              mkdir -p Clouck.app/Contents/MacOS
+              mkdir -p Clouck.app/Contents/Resources
+              cp "$EXECUTABLE" Clouck.app/Contents/MacOS/
+            else
+              echo "ERROR: No Clouck executable found!"
+              exit 1
+            fi
+          fi
 
-                  # Create app bundle structure
-                  mkdir -p Clouck.app/Contents/MacOS
-                  mkdir -p Clouck.app/Contents/Resources
+          # Create Info.plist
+          cat > Clouck.app/Contents/Info.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>Clouck</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.clouck.app</string>
+              <key>CFBundleName</key>
+              <string>Clouck</string>
+              <key>CFBundleVersion</key>
+              <string>1.0.0</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>LSUIElement</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
 
-                  # Copy executable
-                  cp build/Clouck Clouck.app/Contents/MacOS/
+      - name: Deploy Qt Dependencies
+        run: |
+          if [ -d "Clouck.app" ]; then
+            macdeployqt Clouck.app -dmg || hdiutil create -volname "Clouck" -srcfolder Clouck.app -ov -format UDZO Clouck.dmg
+          else
+            echo "ERROR: Clouck.app not found!"
+            exit 1
+          fi
 
-                  # Verify executable was copied
-                  echo "App bundle contents:"
-                  ls -la Clouck.app/Contents/MacOS/
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Clouck-macos
+          path: Clouck.dmg
 
-                  # Create Info.plist
-                  cat > Clouck.app/Contents/Info.plist << EOF
-                  <?xml version="1.0" encoding="UTF-8"?>
-                  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-                  <plist version="1.0">
-                  <dict>
-                      <key>CFBundleExecutable</key>
-                      <string>Clouck</string>
-                      <key>CFBundleIdentifier</key>
-                      <string>com.clouck.app</string>
-                      <key>CFBundleName</key>
-                      <string>Clouck</string>
-                      <key>CFBundleVersion</key>
-                      <string>1.0.0</string>
-                      <key>CFBundlePackageType</key>
-                      <string>APPL</string>
-                      <key>LSUIElement</key>
-                      <true/>
-                  </dict>
-                  </plist>
-                  EOF
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
 
-                  # Verify app bundle exists before running macdeployqt
-                  echo "Verifying app bundle structure:"
-                  if [ -d "Clouck.app" ]; then
-                      echo "App bundle directory exists"
-                      ls -la Clouck.app/
-                      ls -la Clouck.app/Contents/
-                      ls -la Clouck.app/Contents/MacOS/
-                  else
-                      echo "ERROR: Clouck.app directory not found!"
-                      exit 1
-                  fi
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.5.*"
+          cache: true
 
-                  # Check if macdeployqt is available
-                  echo "Checking macdeployqt availability:"
-                  which macdeployqt || echo "macdeployqt not found in PATH"
+      - name: Configure and Build
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
 
-                  # Deploy Qt dependencies (ignore non-critical errors)
-                  echo "Running macdeployqt..."
-                  echo "Current directory before macdeployqt: $(pwd)"
-                  echo "Listing current directory contents:"
-                  ls -la
-                  echo "Calling: macdeployqt Clouck.app -dmg"
-                  macdeployqt build/Clouck.app -dmg || echo "macdeployqt failed, will use fallback"
+      - name: Create Windows Distribution
+        shell: pwsh
+        run: |
+          # Check what was actually built
+          Get-ChildItem -Path "build" -Recurse -Name
 
-                  # Check what was created
-                  echo "Files after macdeployqt:"
-                  ls -la *.dmg 2>/dev/null || echo "No DMG files found"
+          New-Item -ItemType Directory -Path Clouck-windows -Force
+          Copy-Item "build/Release/Clouck.exe" -Destination "Clouck-windows/" -ErrorAction SilentlyContinue
+          Copy-Item "build/Release/*.dll" -Destination "Clouck-windows/" -ErrorAction SilentlyContinue
+          windeployqt --release Clouck-windows/Clouck.exe
+          Compress-Archive -Path Clouck-windows -DestinationPath Clouck-windows.zip
 
-            - name: Check DMG Creation
-              run: |
-                  echo "Checking for DMG files after macdeployqt:"
-                  ls -la *.dmg 2>/dev/null || echo "No DMG files found"
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Clouck-windows
+          path: Clouck-windows.zip
 
-                  # Check if DMG was created by macdeployqt
-                  if [ -f "Clouck.dmg" ]; then
-                      echo "Found Clouck.dmg, renaming to Clouck.dmg"
-                      mv Clouck.dmg Clouck.dmg
-                      echo "DMG created successfully"
-                  else
-                      echo "Clouck.dmg not found, checking for other DMG files:"
-                      ls -la *.dmg 2>/dev/null || echo "Still no DMG files found"
-                      echo "Creating DMG manually using hdiutil..."
-                      # Fallback: create DMG manually if macdeployqt failed
-                      hdiutil create -volname "Clouck" -srcfolder Clouck.app -ov -format UDZO Clouck.dmg
-                  fi
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
-            - name: Upload macOS Artifact
-              uses: actions/upload-artifact@v7
-              with:
-                  name: Clouck
-                  path: Clouck.dmg
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libx11-dev libxfixes-dev
 
-    build-windows:
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v6
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.5.*"
+          cache: true
 
-            - name: Install Qt
-              uses: jurplel/install-qt-action@v4
-              with:
-                  version: "6.5.*"
-                  cache: true
+      - name: Configure CMake
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 
-            - name: Configure CMake
-              run: |
-                  cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
 
-            - name: Build
-              run: cmake --build build --config Release
+      - name: Create Linux Distribution
+        run: |
+          # Check what was actually built
+          echo "Contents of build directory:"
+          ls -la build/
 
-            - name: Create Windows Installer
-              run: |
-                  # Copy executable and dependencies
-                  mkdir Clouck-windows
-                  cp build/Release/Clouck.exe Clouck-windows/
-                  cp build/Release/*.dll Clouck-windows/ 2>/dev/null || true
+          # Look for the executable
+          EXECUTABLE=$(find build/ -name "Clouck" -type f -executable | head -1)
+          if [ -n "$EXECUTABLE" ]; then
+            echo "Found executable: $EXECUTABLE"
+            mkdir -p Clouck-linux
+            cp "$EXECUTABLE" Clouck-linux/
+          else
+            echo "ERROR: No Clouck executable found!"
+            exit 1
+          fi
 
-                  # Deploy Qt dependencies
-                  windeployqt --release Clouck-windows/Clouck.exe
+          # Copy any Qt libraries
+          find build/ -name "*.so*" -exec cp {} Clouck-linux/ \; 2>/dev/null || true
 
-                  # Create ZIP archive
-                  Compress-Archive -Path Clouck-windows -DestinationPath Clouck-windows.zip
+          # Create tar.gz for distribution
+          tar -czf Clouck-linux.tar.gz Clouck-linux/
 
-            - name: Upload Windows Artifact
-              uses: actions/upload-artifact@v7
-              with:
-                  name: Clouck-windows
-                  path: Clouck-windows.zip
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Clouck-linux
+          path: Clouck-linux.tar.gz
 
-    #    build-linux:
-    #        runs-on: ubuntu-latest
-    #        steps:
-    #            - uses: actions/checkout@v6
-    #
-    #            - name: Install Dependencies
-    #              run: |
-    #                  sudo apt-get update
-    #                  sudo apt-get install -y build-essential cmake qt6-base-dev qt6-tools-dev libx11-dev libxfixes-dev
-    #
-    #            - name: Install Qt
-    #              uses: jurplel/install-qt-action@v4
-    #              with:
-    #                  version: "6.5.*"
-    #                  cache: true
-    #
-    #            - name: Configure CMake
-    #              run: |
-    #                  cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-    #
-    #            - name: Build
-    #              run: cmake --build build --config Release
-    #
-    #            - name: Create Linux AppImage
-    #              run: |
-    #                  mkdir -p Clouck.AppDir/usr/bin
-    #                  mkdir -p Clouck.AppDir/usr/lib
-    #
-    #                  cp build/Clouck Clouck.AppDir/usr/bin/
-    #
-    #                  cat > Clouck.AppDir/clouck.desktop << EOF
-    #                  [Desktop Entry]
-    #                  Name=Clouck
-    #                  Exec=Clouck
-    #                  Icon=clouck
-    #                  Type=Application
-    #                  Categories=Utility;
-    #                  EOF
-    #
-    #                  # Copy desktop file
-    #                  cp Clouck.AppDir/clouck.desktop Clouck.AppDir/
-    #
-    #                  # Deploy Qt dependencies (simplified)
-    #                  ldd build/Clouck | grep -o '/lib[^ ]*' | xargs -I {} cp {} Clouck.AppDir/usr/lib/ 2>/dev/null || true
-    #
-    #                  # Create AppImage (simplified approach)
-    #                  cd Clouck.AppDir
-    #                  ln -s usr/bin/Clouck AppRun
-    #                  cd ..
-    #
-    #                  # Create tar.gz for distribution
-    #                  tar -czf Clouck-linux.tar.gz Clouck.AppDir/
-    #
-    #            - name: Upload Linux Artifact
-    #              uses: actions/upload-artifact@v7
-    #              with:
-    #                  name: Clouck-linux
-    #                  path: Clouck-linux.tar.gz
+  generate-changelog:
+    needs: [ build-macos, build-windows, build-linux ]
+    runs-on: ubuntu-latest
+    if: always()
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      version: ${{ steps.version.outputs.version }}
 
-    create-release:
-        needs: [ build-macos, build-windows ]
-        runs-on: ubuntu-latest
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name ==
-            'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-        steps:
-            - name: Download All Artifacts
-              uses: actions/download-artifact@v8
-              with:
-                  path: artifacts
+      - name: Get Version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
 
-            - name: Get Version
-              id: version
-              run: |
-                  if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-                    echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-                  else
-                    echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-                  fi
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          CHANGELOG=$(git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD~1)..HEAD 2>/dev/null || echo "- Initial release")
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "## What's New in $VERSION" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "## Downloads" >> $GITHUB_OUTPUT
+          echo "- **macOS**: Clouck.dmg" >> $GITHUB_OUTPUT
+          echo "- **Windows**: Clouck-windows.zip" >> $GITHUB_OUTPUT
+          echo "- **Linux**: Clouck-linux.tar.gz" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-            - name: Create Release
-              uses: softprops/action-gh-release@v3
-              with:
-                  name: Clouck ${{ steps.version.outputs.VERSION }}
-                  body: |
-                      Cross-platform clock widget application
+  create-release:
+    needs: [ build-macos, build-windows, build-linux, generate-changelog ]
+    runs-on: ubuntu-latest
+    if: always()
 
-                      ## Features
-                      - Always-on-top functionality across all platforms
-                      - Fullscreen mode compatibility
-                      - Resizable interface
-                      - Context menu with customization options
-                      - Native platform integration
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
 
-                      ## Downloads
-                      - **macOS**: Clouck.dmg
-                      - **Windows**: Clouck-windows.zip
-                      - **Linux**: Clouck-linux.tar.gz
+      - name: Display Structure
+        run: ls -R artifacts
 
-                      ## Installation
-                      ### macOS
-                      1. Download Clouck.dmg
-                      2. Open the DMG file
-                      3. Drag Clouck.app to Applications folder
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: Clouck ${{ needs.generate-changelog.outputs.version }}
+          body: |
+            Cross-platform clock widget application
 
-                      ### Windows
-                      1. Download Clouck-windows.zip
-                      2. Extract the ZIP file
-                      3. Run Clouck.exe
+            ${{ needs.generate-changelog.outputs.changelog }}
 
-                      ### Linux
-                      1. Download Clouck-linux.tar.gz
-                      2. Extract the tar.gz file
-                      3. Run the Clouck executable
-                  files: |
-                      artifacts/Clouck/Clouck.dmg
-                      artifacts/Clouck-windows/Clouck-windows.zip
-                      artifacts/Clouck-linux/Clouck-linux.tar.gz
-                  draft: false
-                  prerelease: false
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            ## Installation
+            ### macOS
+            1. Download Clouck.dmg
+            2. Open the DMG file
+            3. Drag Clouck.app to Applications folder
+
+            ### Windows
+            1. Download Clouck-windows.zip
+            2. Extract the ZIP file
+            3. Run Clouck.exe
+
+            ### Linux
+            1. Download Clouck-linux.tar.gz
+            2. Extract the tar.gz file
+            3. Run the Clouck executable
+
+            ### Features
+            - Always-on-top functionality across all platforms
+            - Fullscreen mode compatibility
+            - Resizable interface
+            - Context menu with customization options
+            - Native platform integration
+          files: |
+            artifacts/Clouck-macos/Clouck.dmg
+            artifacts/Clouck-windows/Clouck-windows.zip
+            artifacts/Clouck-linux/Clouck-linux.tar.gz
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
