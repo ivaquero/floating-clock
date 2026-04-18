@@ -127,17 +127,17 @@ jobs:
           # Check what was actually built
           Get-ChildItem -Path "build" -Recurse -Name
 
-          New-Item -ItemType Directory -Path Clouck-windows -Force
-          Copy-Item "build/Release/Clouck.exe" -Destination "Clouck-windows/" -ErrorAction SilentlyContinue
-          Copy-Item "build/Release/*.dll" -Destination "Clouck-windows/" -ErrorAction SilentlyContinue
-          windeployqt --release Clouck-windows/Clouck.exe
-          Compress-Archive -Path Clouck-windows -DestinationPath Clouck-windows.zip
+          New-Item -ItemType Directory -Path Clouck-win -Force
+          Copy-Item "build/Release/Clouck.exe" -Destination "Clouck-win/" -ErrorAction SilentlyContinue
+          Copy-Item "build/Release/*.dll" -Destination "Clouck-win/" -ErrorAction SilentlyContinue
+          windeployqt --release Clouck-win/Clouck.exe
+          Compress-Archive -Path Clouck-win -DestinationPath Clouck-win.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Clouck-windows
-          path: Clouck-windows.zip
+          name: Clouck-win
+          path: Clouck-win.zip
 
   build-linux:
     runs-on: ubuntu-latest
@@ -228,7 +228,7 @@ jobs:
           echo "" >> $GITHUB_OUTPUT
           echo "## Downloads" >> $GITHUB_OUTPUT
           echo "- **macOS**: Clouck.dmg" >> $GITHUB_OUTPUT
-          echo "- **Windows**: Clouck-windows.zip" >> $GITHUB_OUTPUT
+          echo "- **Windows**: Clouck-win.zip" >> $GITHUB_OUTPUT
           echo "- **Linux**: Clouck-linux.tar.gz" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
@@ -258,31 +258,9 @@ jobs:
 
             ${{ needs.generate-changelog.outputs.changelog }}
 
-            ## Installation
-            ### macOS
-            1. Download Clouck.dmg
-            2. Open the DMG file
-            3. Drag Clouck.app to Applications folder
-
-            ### Windows
-            1. Download Clouck-windows.zip
-            2. Extract the ZIP file
-            3. Run Clouck.exe
-
-            ### Linux
-            1. Download Clouck-linux.tar.gz
-            2. Extract the tar.gz file
-            3. Run the Clouck executable
-
-            ### Features
-            - Always-on-top functionality across all platforms
-            - Fullscreen mode compatibility
-            - Resizable interface
-            - Context menu with customization options
-            - Native platform integration
           files: |
             artifacts/Clouck-macos/Clouck.dmg
-            artifacts/Clouck-windows/Clouck-windows.zip
+            artifacts/Clouck-win/Clouck-win.zip
             artifacts/Clouck-linux/Clouck-linux.tar.gz
           draft: false
           prerelease: false
