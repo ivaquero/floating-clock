@@ -50,8 +50,8 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
 ./build.sh
 
 # Run application
-./build/flock.app/Contents/MacOS/flock  # macOS
-./build/flock                           # Linux
+./build/Clouck.app/Contents/MacOS/Clouck  # macOS
+./build/Clouck                           # Linux
 ```
 
 #### Manual Build
@@ -61,14 +61,14 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
 ./clean.sh
 
 # Generate Makefile
-qmake flock.pro
+qmake Clouck.pro
 
 # Build
 make
 
 # Run
-./build/flock.app/Contents/MacOS/flock  # macOS
-./build/flock                             # Linux
+./build/Clouck.app/Contents/MacOS/Clouck  # macOS
+./build/Clouck                             # Linux
 ```
 
 #### Using CMake
@@ -77,7 +77,7 @@ make
 mkdir build && cd build
 cmake ..
 make
-./flock
+./Clouck
 ```
 
 ## 🚀 GitHub Actions
@@ -131,16 +131,16 @@ The configuration file is automatically created when you first run the applicati
 ### Project Structure
 
 ```text
-qflock/
+qClouck/
 ├── build/                    # Build output directory
-│   ├── flock.app/           # macOS application bundle
+│   ├── Clouck.app/           # macOS application bundle
 │   ├── *.o                   # Object files
 │   ├── moc_*.cpp            # Qt meta-object compiler output
 │   └── Makefile             # Build file
 ├── config.xml               # XML configuration file
 ├── build.sh                 # One-click build script
 ├── clean.sh                 # Clean script
-├── flock.pro                # qmake project file
+├── Clouck.pro                # qmake project file
 ├── CMakeLists.txt           # CMake project file
 └── README.md
 ```
@@ -148,7 +148,7 @@ qflock/
 ### Build Output Management
 
 - All compilation files (.o, moc_*.cpp, Makefile, etc.) are output to `build/` directory
-- Executable files are located at `build/flock.app/Contents/MacOS/flock` (macOS) or `build/flock` (Linux)
+- Executable files are located at `build/Clouck.app/Contents/MacOS/Clouck` (macOS) or `build/Clouck` (Linux)
 - Use `./clean.sh` to quickly clean all build files
 - Use `./build.sh` for complete one-click build
 
