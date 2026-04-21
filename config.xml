@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<QFlockConfig>
+<ClouckConfig>
     <FontColor>#ffffffff</FontColor>
     <BackgroundColor>#96000000</BackgroundColor>
     <FontSize>24</FontSize>
     <AlwaysOnTop>true</AlwaysOnTop>
-    <WindowPosition>1132,708</WindowPosition>
+    <WindowPosition>1236,784</WindowPosition>
     <WindowSize>137,59</WindowSize>
-</QFlockConfig>
+</ClouckConfig>

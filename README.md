@@ -16,7 +16,7 @@ When on macOS / Linux, the clock on the menu bar is too small to be noticeable, 
 
 ## ✨ Features
 
-- Cross Platform
+- [ ] **Cross Platform**
   - [x] MacOS
   - [x] Windows
   - [ ] Linux

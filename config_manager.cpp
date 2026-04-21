@@ -26,7 +26,7 @@ bool ConfigManager::loadSettings(const QString &filename)
     QXmlStreamReader reader(&file);
 
     // Check if it's a valid XML file
-    if (!reader.readNextStartElement() || reader.name() != QString("QFlockConfig"))
+    if (!reader.readNextStartElement() || reader.name() != QString("ClouckConfig"))
     {
         qDebug() << "Invalid config file format";
         file.close();
@@ -108,7 +108,7 @@ bool ConfigManager::saveSettings(const QString &filename)
     writer.writeStartDocument();
 
     // Root element
-    writer.writeStartElement("QFlockConfig");
+    writer.writeStartElement("ClouckConfig");
 
     // Font color
     writer.writeTextElement("FontColor", m_fontColor.name(QColor::HexArgb));
@@ -159,6 +159,10 @@ void ConfigManager::setDefaultValues()
     m_backgroundColor = QColor(0, 0, 0, 150); // Semi-transparent black
     m_fontSize = 24;
     m_alwaysOnTop = true;
-    m_windowPosition = QPoint(100, 100);
+
+    // Calculate initial position: bottom-right corner of primary screen
+    // Position will be set properly when widget is shown for the first time
+    m_windowPosition = QPoint(-1, -1); // Special value indicating "not set yet"
+
     m_windowSize = QSize(200, 80); // Default clock size
 }

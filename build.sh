@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build script
 
-echo "Starting QFlock build..."
+echo "Starting Clouck build..."
 
 # Create build directory if it doesn't exist
 mkdir -p build

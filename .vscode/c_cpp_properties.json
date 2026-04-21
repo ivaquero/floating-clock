@@ -14,7 +14,7 @@
             "defines": [],
             "compilerPath": "/usr/bin/clang++",
             "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cppStandard": "c++20",
             "intelliSenseMode": "macos-clang-arm64",
             "configurationProvider": "kylinideteam.cmake-intellisence",
             "macFrameworkPath": [
@@ -36,7 +36,7 @@
             ],
             "compilerPath": "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\bin\\g++.exe",
             "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cppStandard": "c++20",
             "intelliSenseMode": "windows-gcc-x64",
             "configurationProvider": "kylinideteam.cmake-intellisence"
         }

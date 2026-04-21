@@ -5,7 +5,6 @@
 
 #ifdef Q_OS_WIN
 #include <Windows.h>
-#endif
 
 class WindowHelperWindows
 {
@@ -18,5 +17,7 @@ private:
     static void setWindowExStyle(QWidget *widget, DWORD style, bool enable);
     static HWND getWindowHandle(QWidget *widget);
 };
+
+#endif // Q_OS_WIN
 
 #endif // WINDOW_HELPER_WINDOWS_H

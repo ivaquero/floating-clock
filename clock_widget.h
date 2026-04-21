@@ -64,6 +64,7 @@ private:
 
     // Helper methods
     bool isInResizeArea(const QPoint &pos) const;
+    void positionAtBottomRight();
 
 #ifdef Q_OS_MAC
     void setupMacOSWindowProperties();

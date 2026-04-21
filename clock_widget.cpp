@@ -8,6 +8,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QApplication>
+#include <QScreen>
 
 ClockWidget::ClockWidget(QWidget *parent)
     : QWidget(parent), m_dragging(false), m_resizing(false), m_resizeBorder(5)
@@ -265,6 +266,28 @@ bool ClockWidget::isInResizeArea(const QPoint &pos) const
     return resizeArea.contains(pos);
 }
 
+void ClockWidget::positionAtBottomRight()
+{
+    // Get primary screen geometry
+    QScreen *screen = QApplication::primaryScreen();
+    if (!screen)
+    {
+        // Fallback to default position if no screen available
+        move(100, 100);
+        return;
+    }
+
+    QRect screenGeometry = screen->availableGeometry();
+    QSize windowSize = m_configManager->windowSize();
+
+    // Calculate position: bottom-right corner with some margin
+    int margin = 20; // 20 pixels margin from screen edges
+    int x = screenGeometry.right() - windowSize.width() - margin;
+    int y = screenGeometry.bottom() - windowSize.height() - margin;
+
+    move(x, y);
+}
+
 void ClockWidget::loadSettings()
 {
     m_configManager = new ConfigManager(this);
@@ -283,7 +306,16 @@ void ClockWidget::loadSettings()
     m_alwaysOnTop = m_configManager->alwaysOnTop();
 
     // Restore window position and size
-    move(m_configManager->windowPosition());
+    QPoint windowPos = m_configManager->windowPosition();
+    if (windowPos.x() == -1 && windowPos.y() == -1)
+    {
+        // First time: position at bottom-right corner
+        positionAtBottomRight();
+    }
+    else
+    {
+        move(windowPos);
+    }
     resize(m_configManager->windowSize());
 
     // Update always on top checkbox in menu

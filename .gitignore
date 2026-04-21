@@ -88,5 +88,6 @@ Icon
 .cmake
 .qtc_clangd
 .qmake.stash
-build
 *.dmg
+build
+test*

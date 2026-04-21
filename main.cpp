@@ -5,9 +5,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    app.setApplicationName("QFlock");
-    app.setOrganizationName("QFlock");
-    app.setApplicationDisplayName("QFlock");
+    app.setApplicationName("Clouck");
+    app.setOrganizationName("Clouck");
+    app.setApplicationDisplayName("Clouck");
 
     ClockWidget clock;
     clock.show();
