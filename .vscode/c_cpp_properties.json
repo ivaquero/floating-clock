@@ -27,7 +27,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\include",
-                "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\include\\qt"
+                "${env:SCOOP}\\apps\\msys2-cn\\current\\ucrt64\\include\\qt6"
             ],
             "defines": [
                 "_DEBUG",
